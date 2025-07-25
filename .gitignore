@@ -1,0 +1,20 @@
+# Python virtual environment
+venv/
+.Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.vscode/
+
+# Temporary files or local data you don't want to commit
+*.zip
+*.csv
+*.log
+.env # If you ever use a .env file for local secrets (for local testing)
