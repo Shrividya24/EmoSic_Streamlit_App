@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 from transformers import pipeline
-import gspread
-from datetime import datetime
+import gspread # Ensure gspread is imported
+from datetime import datetime # Ensure datetime is imported
 
 # --- Configuration ---
 MODEL_PATH = "./emosic_emotion_classifier_model"
@@ -28,9 +28,9 @@ emotion_classifier = load_emotion_model(MODEL_PATH)
 EMOTION_PLAYLISTS = {
     "joy": {
         "English": [
-            {"title": "Happy - Pharrell Williams", "url": "https://youtu.be/ZbZSe6N_BXs?si=jsNxUVwIUFrHacsZ"},
+            {"title": "Happy - Pharrell Williams", "url": "https://www.youtube.com/results?search_query=Pharrell+Williams+Happy"},
             {"title": "Ed Sheeran - Sapphire", "url": "https://youtu.be/JgDNFQ2RaLQ?si=qDSygwPlr5mb-NkZ"},
-            {"title": "Walking on Sunshine - Katrina and the Waves", "url": "https://www.youtube.com/results?search_query=Katrina+and+the+Waves+Walking+on+Sunshine"},
+            {"title": "Walking on Sunshine - Katrina and the Waves", "url": "https://www.youtube.com/results?search_query=Walking+on+Sunshine+Katrina+and+the+Waves"},
             {"title": "Can't Stop the Feeling! - Justin Timberlake", "url": "https://www.youtube.com/results?search_query=Justin+Timberlake+Can%27t+Stop+the+Feeling"},
             {"title": "Shake It Off - Taylor Swift", "url": "https://www.youtube.com/results?search_query=Taylor+Swift+Shake+It+Off"},
             {"title": "Treasure - Bruno Mars", "url": "https://www.youtube.com/results?search_query=Bruno+Mars+Treasure"},
@@ -280,7 +280,7 @@ def log_feedback_to_sheet(user_input, detected_emotion, language, accuracy_feedb
 
 # --- 4. Streamlit UI Design ---
 st.set_page_config(
-    page_title="EmoSic 🎵",
+    page_title="EmoSic ?",
     page_icon="🎵",
     layout="centered"
 )
@@ -313,7 +313,7 @@ st.sidebar.caption("Made with ❤️ by Shrividya | EmoSic 🎵")
 st.subheader("💭 Tell us how you feel:")
 user_input_text = st.text_area(
     "Describe your mood 👇",
-    placeholder="e.g. I feel so energetic and happy today! 🌟",
+    placeholder="e.g. I feel so energetic and happy today! ",
     height=120,
     key="emotion_text_area"
 )
@@ -351,7 +351,7 @@ if st.session_state.detected_emotion:
         default_lang_index = languages_available.index(st.session_state.get("music_lang_select", "English"))
     except ValueError:
         default_lang_index = 0
-
+        
     language_choice = st.selectbox(
         "Choose your language:",
         languages_available,
