@@ -18,3 +18,6 @@ Thumbs.db
 *.csv
 *.log
 .env # If you ever use a .env file for local secrets (for local testing)
+
+# Streamlit secrets (local)
+.streamlit/secrets.toml

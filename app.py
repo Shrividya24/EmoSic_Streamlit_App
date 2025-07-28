@@ -236,29 +236,44 @@ EMOTION_PLAYLISTS = {
 def get_google_sheet_client():
     """Authenticates with Google Sheets API using Streamlit secrets and returns a gspread client."""
     try:
+        # Fetch each credential field individually from st.secrets.
+        # This is more robust against subtle TOML parsing issues with nested dictionaries.
+        # We use .get() with a default of None, then check for None for critical fields.
         creds = {
-            "type": st.secrets["gcp_service_account"]["type"],
-            "project_id": st.secrets["gcp_service_account"]["project_id"],
-            "private_key_id": st.secrets["gcp_service_account"]["private_key_id"],
-            "private_key": st.secrets["gcp_service_account"]["private_key"],
-            "client_email": st.secrets["gcp_service_account"]["client_email"],
-            "client_id": st.secrets["gcp_service_account"]["client_id"],
-            "auth_uri": st.secrets["gcp_service_account"]["auth_uri"],
-            "token_uri": st.secrets["gcp_service_account"]["token_uri"],
-            "auth_provider_x509_cert_url": st.secrets["gcp_service_account"]["auth_provider_x509_cert_url"],
-            "client_x509_cert_url": st.secrets["gcp_service_account"]["client_x509_cert_url"],
-            "universe_domain": st.secrets["gcp_service_account"]["universe_domain"]
+            "type": st.secrets.get("gcp_service_account_type"),
+            "project_id": st.secrets.get("gcp_service_account_project_id"),
+            "private_key_id": st.secrets.get("gcp_service_account_private_key_id"),
+            # The private_key is the most sensitive and often problematic field.
+            "private_key": st.secrets.get("gcp_service_account_private_key"),
+            "client_email": st.secrets.get("gcp_service_account_client_email"),
+            "client_id": st.secrets.get("gcp_service_account_client_id"),
+            "auth_uri": st.secrets.get("gcp_service_account_auth_uri"),
+            "token_uri": st.secrets.get("gcp_service_account_token_uri"),
+            "auth_provider_x509_cert_url": st.secrets.get("gcp_service_account_auth_provider_x509_cert_url"),
+            "client_x509_cert_url": st.secrets.get("gcp_service_account_client_x509_cert_url"),
+            "universe_domain": st.secrets.get("gcp_service_account_universe_domain")
         }
+
+        # Basic validation: Check if critical fields are missing (will raise KeyError if None)
+        critical_fields = ["type", "project_id", "private_key", "client_email"]
+        for field in critical_fields:
+            if creds.get(field) is None:
+                raise KeyError(f"Critical Google Sheets credential '{field}' not found in Streamlit secrets.")
+
+        # Authenticate using the dictionary of credentials
         gc = gspread.service_account_from_dict(creds)
         return gc
-    except KeyError:
-        st.error("Google Sheets API key not found in Streamlit secrets. "
-                 "Please ensure 'gcp_service_account' is configured in your app's secrets.")
-        st.stop()
+    except KeyError as ke: # Catch the specific KeyError if a secret is missing
+        st.error(f"Google Sheets API key not found in Streamlit secrets: {ke}. "
+                 "Please ensure ALL individual 'gcp_service_account_...' keys are configured in your app's secrets.")
+        st.stop() # Stop the app if secrets are not configured
     except Exception as e:
         st.error(f"Error authenticating with Google Sheets: {e}. "
                  "Please check your Google Cloud setup and `st.secrets` configuration.")
         st.stop()
+
+   
+    
 
 def log_feedback_to_sheet(user_input, detected_emotion, language, accuracy_feedback, comment_feedback):
     """Logs user feedback to the specified Google Sheet."""
@@ -280,7 +295,7 @@ def log_feedback_to_sheet(user_input, detected_emotion, language, accuracy_feedb
 
 # --- 4. Streamlit UI Design ---
 st.set_page_config(
-    page_title="EmoSic ?",
+    page_title="🎵EmoSic",
     page_icon="🎵",
     layout="centered"
 )
